@@ -1,5 +1,6 @@
 import { User, Bot } from "lucide-react";
 import { cn } from "@/lib/utils";
+import detroitAiAvatar from "@/assets/detroit-ai-avatar.png";
 
 interface ChatMessageProps {
   message: {
@@ -19,18 +20,26 @@ export const ChatMessage = ({ message }: ChatMessageProps) => {
       "animate-in slide-in-from-bottom-2 duration-300"
     )}>
       <div className={cn(
-        "flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center transition-smooth",
+        "flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center transition-smooth overflow-hidden",
         isUser 
           ? "bg-chat-user-bg text-chat-user-text shadow-glow" 
           : "bg-chat-ai-bg text-chat-ai-text border border-border"
       )}>
-        {isUser ? <User size={16} /> : <Bot size={16} />}
+        {isUser ? (
+          <User size={16} />
+        ) : (
+          <img 
+            src={detroitAiAvatar} 
+            alt="DetroitAI" 
+            className="w-full h-full object-cover"
+          />
+        )}
       </div>
       
       <div className="flex-1 space-y-2">
         <div className="flex items-center gap-2">
           <span className="text-sm font-medium text-foreground">
-            {isUser ? 'You' : 'AI Assistant'}
+            {isUser ? 'You' : 'DetroitAI'}
           </span>
           <span className="text-xs text-muted-foreground">
             {message.timestamp.toLocaleTimeString()}

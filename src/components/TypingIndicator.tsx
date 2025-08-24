@@ -1,15 +1,20 @@
 import { Bot } from "lucide-react";
+import detroitAiAvatar from "@/assets/detroit-ai-avatar.png";
 
 export const TypingIndicator = () => {
   return (
     <div className="flex gap-3 p-4 animate-in slide-in-from-bottom-2 duration-300">
-      <div className="flex-shrink-0 w-8 h-8 rounded-full bg-chat-ai-bg text-chat-ai-text border border-border flex items-center justify-center">
-        <Bot size={16} />
+      <div className="flex-shrink-0 w-8 h-8 rounded-full bg-chat-ai-bg text-chat-ai-text border border-border flex items-center justify-center overflow-hidden">
+        <img 
+          src={detroitAiAvatar} 
+          alt="DetroitAI" 
+          className="w-full h-full object-cover"
+        />
       </div>
       
       <div className="flex-1 space-y-2">
         <div className="flex items-center gap-2">
-          <span className="text-sm font-medium text-foreground">AI Assistant</span>
+          <span className="text-sm font-medium text-foreground">DetroitAI</span>
         </div>
         
         <div className="flex items-center gap-1">
