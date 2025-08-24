@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { MessageSquare, Sparkles, Menu } from "lucide-react";
+import { MessageSquare, Sparkles, Menu, Wand2, Mic } from "lucide-react";
 import { ChatMessage } from "@/components/ChatMessage";
 import { ChatInput } from "@/components/ChatInput";
 import { TypingIndicator } from "@/components/TypingIndicator";
@@ -7,6 +7,9 @@ import { Sidebar } from "@/components/Sidebar";
 import { ActionButtons } from "@/components/ActionButtons";
 import { Header } from "@/components/Header";
 import { CodePreview } from "@/components/CodePreview";
+import { ImageGenerator } from "@/components/ImageGenerator";
+import { VoiceRecognition } from "@/components/VoiceRecognition";
+import { FeedbackModal } from "@/components/FeedbackModal";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { OpenRouterService, ChatMessage as ChatMessageType } from "@/services/openrouter";
@@ -19,6 +22,9 @@ const Index = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
+  const [showImageGenerator, setShowImageGenerator] = useState(false);
+  const [showFeedback, setShowFeedback] = useState(false);
+  const [feedbackMessage, setFeedbackMessage] = useState<string>("");
   const [apiError, setApiError] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const openRouterService = OpenRouterService.getInstance();
@@ -105,6 +111,17 @@ const Index = () => {
     }
   };
 
+  const handleVoiceTranscript = (transcript: string) => {
+    if (transcript.trim()) {
+      handleSendMessage(transcript);
+    }
+  };
+
+  const handleFeedback = (messageId: string, content: string) => {
+    setFeedbackMessage(content);
+    setShowFeedback(true);
+  };
+
   const handleNewChat = () => {
     const newChatId = createNewChat();
     setMessages([]);
@@ -144,11 +161,44 @@ const Index = () => {
 
         {/* Main Content */}
         <div className="flex-1 flex flex-col min-w-0">
-          {/* Show preview or chat */}
+          {/* Show different views based on state */}
           {showPreview ? (
             <CodePreview />
+          ) : showImageGenerator ? (
+            <ImageGenerator onClose={() => setShowImageGenerator(false)} />
           ) : (
             <>
+              {/* Feature Toolbar */}
+              <div className="border-b border-border bg-background/50 backdrop-blur-sm p-3">
+                <div className="flex items-center justify-between max-w-4xl mx-auto">
+                  <div className="flex items-center gap-2">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setSidebarOpen(!sidebarOpen)}
+                      className="lg:hidden"
+                    >
+                      <Menu size={18} />
+                    </Button>
+                    <span className="text-sm font-medium text-muted-foreground">
+                      Enhanced AI Features
+                    </span>
+                  </div>
+                  
+                  <div className="flex items-center gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setShowImageGenerator(true)}
+                      className="flex items-center gap-2 hover:shadow-glow transition-bounce"
+                    >
+                      <Wand2 size={16} />
+                      Generate Images
+                    </Button>
+                  </div>
+                </div>
+              </div>
+
               {/* API Error Alert */}
               {apiError && (
                 <Alert variant="destructive" className="m-4 mb-0">
@@ -165,16 +215,27 @@ const Index = () => {
                     <div className="flex-1 flex items-center justify-center p-8">
                       <div className="text-center max-w-2xl mx-auto space-y-8">
                         <div>
-                          <div className="w-16 h-16 rounded-full gradient-primary flex items-center justify-center mx-auto mb-4 shadow-glow">
+                          <div className="w-20 h-20 rounded-full gradient-primary flex items-center justify-center mx-auto mb-6 shadow-glow animate-pulse">
                             <img 
                               src={detroitAiLogo} 
                               alt="DetroitAI" 
-                              className="w-10 h-10 object-contain"
+                              className="w-12 h-12 object-contain"
                             />
                           </div>
-                          <h2 className="text-3xl font-semibold text-foreground mb-3">What can DetroitAI help with?</h2>
-                          <p className="text-muted-foreground">Ask questions, get help with coding, or start a conversation!</p>
+                          <h2 className="text-4xl font-bold text-foreground mb-4 bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+                            Welcome to DetroitAI
+                          </h2>
+                          <p className="text-lg text-muted-foreground mb-2">Your Advanced AI Assistant</p>
+                          <p className="text-sm text-muted-foreground">
+                            Ask questions, generate images, use voice commands, and explore endless possibilities!
+                          </p>
                         </div>
+                        
+                        {/* Voice Recognition Card */}
+                        <VoiceRecognition 
+                          onTranscript={handleVoiceTranscript}
+                          className="max-w-md mx-auto"
+                        />
                         
                         <ActionButtons onAction={handleActionClick} />
                       </div>
@@ -182,7 +243,11 @@ const Index = () => {
                   ) : (
                     <div className="max-w-4xl mx-auto">
                       {messages.map((message) => (
-                        <ChatMessage key={message.id} message={message} />
+                        <ChatMessage 
+                          key={message.id} 
+                          message={message} 
+                          onFeedback={handleFeedback}
+                        />
                       ))}
                       {isLoading && <TypingIndicator />}
                       <div ref={messagesEndRef} />
@@ -190,17 +255,34 @@ const Index = () => {
                   )}
                 </div>
                 
-                {/* Chat Input */}
-                <ChatInput 
-                  onSendMessage={handleSendMessage}
-                  disabled={isLoading}
-                  isLoading={isLoading}
-                />
+                {/* Chat Input with Voice Integration */}
+                <div className="border-t border-border bg-background/80 backdrop-blur-sm p-4">
+                  <div className="max-w-4xl mx-auto">
+                    {messages.length > 0 && (
+                      <VoiceRecognition 
+                        onTranscript={handleVoiceTranscript}
+                        className="mb-3"
+                      />
+                    )}
+                    <ChatInput 
+                      onSendMessage={handleSendMessage}
+                      disabled={isLoading}
+                      isLoading={isLoading}
+                    />
+                  </div>
+                </div>
               </main>
             </>
           )}
         </div>
       </div>
+      
+      {/* Feedback Modal */}
+      <FeedbackModal
+        isOpen={showFeedback}
+        onClose={() => setShowFeedback(false)}
+        messageContent={feedbackMessage}
+      />
     </div>
   );
 };
