@@ -8,53 +8,52 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    /* DeepSeek Dark Theme Colors */
-    --background: 220 13% 8%;
-    --foreground: 210 40% 95%;
+    --background: 217 33% 17%;
+    --foreground: 213 31% 91%;
 
-    --card: 220 13% 10%;
-    --card-foreground: 210 40% 95%;
+    --card: 217 33% 15%;
+    --card-foreground: 213 31% 91%;
 
-    --popover: 220 13% 10%;
-    --popover-foreground: 210 40% 95%;
+    --popover: 217 33% 15%;
+    --popover-foreground: 213 31% 91%;
 
-    --primary: 217 91% 60%;
-    --primary-foreground: 220 13% 8%;
+    --primary: 142 71% 45%;
+    --primary-foreground: 217 33% 17%;
 
-    --secondary: 220 13% 15%;
-    --secondary-foreground: 210 40% 95%;
+    --secondary: 217 33% 20%;
+    --secondary-foreground: 213 31% 91%;
 
-    --muted: 220 13% 15%;
-    --muted-foreground: 215 20% 65%;
+    --muted: 217 33% 23%;
+    --muted-foreground: 213 13% 65%;
 
-    --accent: 217 91% 60%;
-    --accent-foreground: 220 13% 8%;
+    --accent: 142 71% 45%;
+    --accent-foreground: 217 33% 17%;
 
     --destructive: 0 84% 60%;
-    --destructive-foreground: 210 40% 95%;
+    --destructive-foreground: 213 31% 91%;
 
-    --border: 220 13% 20%;
-    --input: 220 13% 15%;
-    --ring: 217 91% 60%;
+    --border: 217 33% 25%;
+    --input: 217 33% 23%;
+    --ring: 142 71% 45%;
 
-    --radius: 0.5rem;
+    --radius: 0.75rem;
 
     /* Chat specific tokens */
-    --chat-user-bg: 217 91% 60%;
-    --chat-user-text: 220 13% 8%;
-    --chat-ai-bg: 220 13% 12%;
-    --chat-ai-text: 210 40% 95%;
-    --chat-hover: 220 13% 18%;
+    --chat-user-bg: 142 71% 45%;
+    --chat-user-text: 217 33% 17%;
+    --chat-ai-bg: 217 33% 20%;
+    --chat-ai-text: 213 31% 91%;
+    --chat-hover: 217 33% 23%;
     
-    /* DeepSeek gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(217 91% 60%), hsl(217 91% 70%));
-    --gradient-background: linear-gradient(135deg, hsl(220 13% 8%), hsl(220 13% 6%));
-    --gradient-accent: linear-gradient(45deg, hsl(217 91% 60%), hsl(220 91% 60%));
+    /* Enhanced gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(142 71% 45%), hsl(142 71% 55%));
+    --gradient-background: linear-gradient(135deg, hsl(217 33% 17%), hsl(217 33% 15%));
+    --gradient-accent: linear-gradient(45deg, hsl(142 71% 45%), hsl(180 71% 45%));
     
-    /* DeepSeek shadows */
-    --shadow-glow: 0 0 30px hsl(217 91% 60% / 0.3);
-    --shadow-card: 0 8px 24px hsl(220 13% 4% / 0.4);
-    --shadow-elegant: 0 20px 60px hsl(220 13% 4% / 0.5);
+    /* Enhanced shadows */
+    --shadow-glow: 0 0 30px hsl(142 71% 45% / 0.3);
+    --shadow-card: 0 8px 24px hsl(217 33% 10% / 0.4);
+    --shadow-elegant: 0 20px 60px hsl(217 33% 10% / 0.5);
     
     /* Enhanced animations */
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);

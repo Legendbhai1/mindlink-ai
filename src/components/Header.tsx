@@ -1,44 +1,33 @@
-import { Menu, RotateCcw, Smartphone } from "lucide-react";
+import { Code, MessageSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import strokeAiLogo from "@/assets/stroke-ai-logo-animated.png";
+import strokeAiLogo from "@/assets/stroke-ai-logo.png";
 
 interface HeaderProps {
   onTogglePreview: () => void;
   showPreview: boolean;
-  onToggleSidebar?: () => void;
 }
 
-export const Header = ({ onTogglePreview, showPreview, onToggleSidebar }: HeaderProps) => {
+export const Header = ({ onTogglePreview, showPreview }: HeaderProps) => {
   return (
-    <header className="bg-background border-b border-border px-4 py-3 animate-slide-up">
-      <div className="flex items-center justify-between max-w-full">
+    <header className="border-b border-border bg-background/80 backdrop-blur-sm px-4 py-3">
+      <div className="flex items-center justify-between max-w-6xl mx-auto">
         <div className="flex items-center gap-3">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={onToggleSidebar}
-            className="p-2 hover:bg-secondary/80 transition-all duration-200"
-          >
-            <Menu size={20} className="text-muted-foreground" />
-          </Button>
+          <img 
+            src={strokeAiLogo} 
+            alt="Stroke AI"
+            className="w-8 h-8 object-contain"
+          />
+          <h1 className="text-xl font-bold text-foreground">Stroke AI</h1>
         </div>
         
         <Button
-          variant="outline"  
-          size="sm"
-          className="flex items-center gap-2 px-4 py-2 rounded-full border-primary/30 hover:border-primary hover:bg-primary/10 transition-all duration-300"
-        >
-          <Smartphone size={16} />
-          Get App
-        </Button>
-        
-        <Button
-          variant="ghost"
+          variant="outline"
           size="sm"
           onClick={onTogglePreview}
-          className="p-2 hover:bg-secondary/80 transition-all duration-200"
+          className="flex items-center gap-2"
         >
-          <RotateCcw size={20} className="text-muted-foreground" />
+          {showPreview ? <MessageSquare size={16} /> : <Code size={16} />}
+          {showPreview ? 'Chat' : 'Preview'}
         </Button>
       </div>
     </header>
