@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { MessageSquare, Sparkles, Menu, Wand2, Mic } from "lucide-react";
 import { ChatMessage } from "@/components/ChatMessage";
-import { ChatInput } from "@/components/ChatInput";
+import { DeepSeekInput } from "@/components/DeepSeekInput";
 import { TypingIndicator } from "@/components/TypingIndicator";
 import { Sidebar } from "@/components/Sidebar";
 import { ActionButtons } from "@/components/ActionButtons";
@@ -15,7 +15,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { OpenRouterService, ChatMessage as ChatMessageType } from "@/services/openrouter";
 import { useChatHistory } from "@/hooks/useChatHistory";
 import { useToast } from "@/hooks/use-toast";
-import strokeAiLogo from "@/assets/stroke-ai-logo.png";
+import strokeAiLogo from "@/assets/stroke-ai-logo-animated.png";
 import strokeAiAvatar from "@/assets/stroke-ai-avatar.png";
 
 const Index = () => {
@@ -142,10 +142,11 @@ const Index = () => {
   };
   
   return (
-    <div className="min-h-screen gradient-background flex flex-col">
+    <div className="min-h-screen bg-background flex flex-col">
       <Header 
         onTogglePreview={() => setShowPreview(!showPreview)}
         showPreview={showPreview}
+        onToggleSidebar={() => setSidebarOpen(!sidebarOpen)}
       />
       
       <div className="flex flex-1 overflow-hidden">
@@ -169,36 +170,6 @@ const Index = () => {
             <ImageGenerator onClose={() => setShowImageGenerator(false)} />
           ) : (
             <>
-              {/* Feature Toolbar */}
-              <div className="border-b border-border bg-background/50 backdrop-blur-sm p-3">
-                <div className="flex items-center justify-between max-w-4xl mx-auto">
-                  <div className="flex items-center gap-2">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => setSidebarOpen(!sidebarOpen)}
-                      className="lg:hidden"
-                    >
-                      <Menu size={18} />
-                    </Button>
-                    <span className="text-sm font-medium text-muted-foreground">
-                      Enhanced AI Features
-                    </span>
-                  </div>
-                  
-                  <div className="flex items-center gap-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setShowImageGenerator(true)}
-                      className="flex items-center gap-2 hover:shadow-glow transition-bounce"
-                    >
-                      <Wand2 size={16} />
-                      Generate Images
-                    </Button>
-                  </div>
-                </div>
-              </div>
 
               {/* API Error Alert */}
               {apiError && (
@@ -214,31 +185,61 @@ const Index = () => {
                 <div className="flex-1 overflow-y-auto">
                   {messages.length === 0 ? (
                     <div className="flex-1 flex items-center justify-center p-8">
-                      <div className="text-center max-w-2xl mx-auto space-y-8">
+                      <div className="text-center max-w-2xl mx-auto space-y-8 animate-fade-in">
                         <div>
-                          <div className="w-16 h-16 rounded-full gradient-primary flex items-center justify-center mx-auto mb-6 shadow-glow">
+                          <div className="w-20 h-20 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center mx-auto mb-6 shadow-glow animate-logo-pulse">
                             <img 
                               src={strokeAiLogo} 
                               alt="Stroke AI" 
-                              className="w-10 h-10 object-contain"
+                              className="w-12 h-12 object-contain"
                             />
                           </div>
-                          <h2 className="text-3xl font-bold text-foreground mb-3 bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-                            Welcome to Stroke AI
+                          <h2 className="text-4xl font-bold text-foreground mb-4 bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent animate-slide-up">
+                            Stroke AI
                           </h2>
-                          <p className="text-lg text-muted-foreground mb-2">Your Advanced AI Assistant</p>
-                          <p className="text-sm text-muted-foreground max-w-md mx-auto leading-relaxed">
-                            Ask questions, generate images, use voice commands, and explore endless possibilities with our powerful AI!
+                          <p className="text-lg text-muted-foreground mb-6 animate-slide-up" style={{animationDelay: '0.1s'}}>
+                            Advanced AI features and tools
+                          </p>
+                          
+                          <div className="space-y-3 text-left max-w-md mx-auto text-sm text-muted-foreground animate-slide-up" style={{animationDelay: '0.2s'}}>
+                            <div className="flex items-start gap-3">
+                              <span className="text-primary">○</span>
+                              <span>Code generation and debugging assistance</span>
+                            </div>
+                            <div className="flex items-start gap-3">
+                              <span className="text-primary">○</span>
+                              <span>Image generation and analysis tools</span>
+                            </div>
+                            <div className="flex items-start gap-3">
+                              <span className="text-primary">○</span>
+                              <span>Text-to-speech functionality</span>
+                            </div>
+                            <div className="flex items-start gap-3">
+                              <span className="text-primary">○</span>
+                              <span>Deep search toggle</span>
+                            </div>
+                            <div className="flex items-start gap-3">
+                              <span className="text-primary">3.</span>
+                              <span>A responsive design that works on both desktop and mobile devices</span>
+                            </div>
+                            <div className="flex items-start gap-3">
+                              <span className="text-primary">4.</span>
+                              <span>Dark/light mode toggle</span>
+                            </div>
+                            <div className="flex items-start gap-3">
+                              <span className="text-primary">5.</span>
+                              <span>Simulated AI responses that demonstrate how the actual API would work</span>
+                            </div>
+                            <div className="flex items-start gap-3">
+                              <span className="text-primary">6.</span>
+                              <span>Interactive elements for sending messages, recording audio, and using tools</span>
+                            </div>
+                          </div>
+                          
+                          <p className="text-sm text-muted-foreground mt-6 animate-slide-up" style={{animationDelay: '0.3s'}}>
+                            The implementation uses the provided API key and maintains all the features described in the original code while presenting them in a clean, modern interface.
                           </p>
                         </div>
-                        
-                        {/* Voice Recognition Card */}
-                        <VoiceRecognition 
-                          onTranscript={handleVoiceTranscript}
-                          className="max-w-md mx-auto"
-                        />
-                        
-                        <ActionButtons onAction={handleActionClick} />
                       </div>
                     </div>
                    ) : (
@@ -258,35 +259,14 @@ const Index = () => {
                    )}
                  </div>
                  
-                 {/* Chat Input */}
-                 <div className="border-t border-border bg-background p-4">
-                   <div className="max-w-4xl mx-auto space-y-3">
-                     <div className="flex justify-center mb-2">
-                       <Button
-                         onClick={handleNewChat}
-                         variant="outline"
-                         size="sm"
-                         className="rounded-full px-6 py-2 text-sm font-medium border-primary/20 hover:border-primary hover:bg-primary/10"
-                       >
-                         <MessageSquare size={16} className="mr-2" />
-                         New chat
-                       </Button>
-                     </div>
-                     
-                     {messages.length > 0 && (
-                       <VoiceRecognition 
-                         onTranscript={handleVoiceTranscript}
-                         className="mb-3"
-                       />
-                     )}
-                     <ChatInput 
-                       onSendMessage={handleSendMessage}
-                       disabled={isLoading}
-                       isLoading={isLoading}
-                     />
-                   </div>
-                 </div>
-              </main>
+                  {/* DeepSeek Input */}
+                  <DeepSeekInput 
+                    onSendMessage={handleSendMessage}
+                    disabled={isLoading}
+                    isLoading={isLoading}
+                    onVoiceTranscript={handleVoiceTranscript}
+                  />
+             </main>
             </>
           )}
         </div>
