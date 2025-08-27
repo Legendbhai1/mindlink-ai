@@ -1,6 +1,6 @@
 import { Code, MessageSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import detroitAiLogo from "@/assets/detroit-ai-logo.png";
+import strokeAiLogo from "@/assets/stroke-ai-logo.png";
 
 interface HeaderProps {
   onTogglePreview: () => void;
@@ -13,11 +13,11 @@ export const Header = ({ onTogglePreview, showPreview }: HeaderProps) => {
       <div className="flex items-center justify-between max-w-6xl mx-auto">
         <div className="flex items-center gap-3">
           <img 
-            src={detroitAiLogo} 
-            alt="DetroitAI" 
+            src={strokeAiLogo} 
+            alt="Stroke AI"
             className="w-8 h-8 object-contain"
           />
-          <h1 className="text-xl font-bold text-foreground">DetroitAI</h1>
+          <h1 className="text-xl font-bold text-foreground">Stroke AI</h1>
         </div>
         
         <Button
