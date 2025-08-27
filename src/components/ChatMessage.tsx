@@ -31,11 +31,9 @@ export const ChatMessage = ({ message, onFeedback }: ChatMessageProps) => {
           <User size={16} />
         ) : (
           <img 
-              <img 
-                src={strokeAiAvatar} 
-                alt="Stroke AI" 
-                className="w-8 h-8 rounded-full object-cover"
-              />
+            src={strokeAiAvatar} 
+            alt="Stroke AI" 
+            className="w-8 h-8 rounded-full object-cover"
           />
         )}
       </div>
