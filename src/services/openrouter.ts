@@ -62,7 +62,7 @@ export class OpenRouterService {
           'X-Title': 'Stroke AI Assistant'
         },
         body: JSON.stringify({
-          model: 'gpt-3.5-turbo',
+          model: 'openrouter/auto',
           messages: openRouterMessages,
           temperature: 0.7,
           max_tokens: 2000,
@@ -74,13 +74,13 @@ export class OpenRouterService {
       });
       
       if (!response.ok) {
-        // Try next API key if available and retry count is less than total keys
+        // Try next OpenRouter API key; otherwise fall back to Google Gemini
         if (retryCount < API_KEYS.length - 1) {
           currentApiKeyIndex = (currentApiKeyIndex + 1) % API_KEYS.length;
           return this.sendMessageWithRetry(messages, retryCount + 1);
+        } else {
+          return this.sendViaGoogle(messages, 0);
         }
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(`All API keys failed. Last error: ${response.status} ${response.statusText}. ${errorData.error?.message || ''}`);
       }
       
       const data = await response.json();
@@ -92,15 +92,65 @@ export class OpenRouterService {
       return data.choices[0].message.content;
     } catch (error) {
       console.error('OpenRouter API Error:', error);
-      // Try next API key if available and retry count is less than total keys
+      // Try next OpenRouter API key; otherwise fall back to Google Gemini
       if (retryCount < API_KEYS.length - 1) {
         currentApiKeyIndex = (currentApiKeyIndex + 1) % API_KEYS.length;
         return this.sendMessageWithRetry(messages, retryCount + 1);
       }
-      if (error instanceof Error) {
-        throw error;
+      // Fall back to Google Gemini
+      return this.sendViaGoogle(messages, 0);
+    }
+  }
+
+  private async sendViaGoogle(messages: ChatMessage[], retryCount: number): Promise<string> {
+    try {
+      const systemPrompt = "You are Stroke AI, a powerful AI assistant. Provide clear, informative, and engaging responses with sources when possible. Use markdown formatting when appropriate.";
+      const contents = [
+        { role: "user", parts: [{ text: systemPrompt }] },
+        ...messages.map(m => ({
+          role: m.role === 'assistant' ? 'model' : 'user',
+          parts: [{ text: m.content }]
+        }))
+      ];
+
+      const key = GOOGLE_API_KEYS[currentGoogleKeyIndex % GOOGLE_API_KEYS.length];
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${key}`;
+
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents,
+          generationConfig: {
+            temperature: 0.7,
+            maxOutputTokens: 2048
+          }
+        })
+      });
+
+      if (!response.ok) {
+        if (retryCount < GOOGLE_API_KEYS.length - 1) {
+          currentGoogleKeyIndex = (currentGoogleKeyIndex + 1) % GOOGLE_API_KEYS.length;
+          return this.sendViaGoogle(messages, retryCount + 1);
+        }
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(`Google Gemini failed: ${response.status} ${response.statusText}. ${errorData.error?.message || ''}`);
       }
-      throw new Error('Failed to get response from Stroke AI assistant');
+
+      const data = await response.json();
+      const text = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+      if (!text) {
+        throw new Error('Invalid response structure from Google Gemini');
+      }
+      return text;
+    } catch (err) {
+      console.error('Google Gemini API Error:', err);
+      if (retryCount < GOOGLE_API_KEYS.length - 1) {
+        currentGoogleKeyIndex = (currentGoogleKeyIndex + 1) % GOOGLE_API_KEYS.length;
+        return this.sendViaGoogle(messages, retryCount + 1);
+      }
+      if (err instanceof Error) throw err;
+      throw new Error('Failed to get response from Stroke AI assistant via Google Gemini');
     }
   }
 }
