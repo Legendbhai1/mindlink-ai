@@ -15,10 +15,44 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { OpenRouterService, ChatMessage as ChatMessageType } from "@/services/openrouter";
 import { useChatHistory } from "@/hooks/useChatHistory";
 import { useToast } from "@/hooks/use-toast";
-import strokeAiLogo from "@/assets/stroke-ai-logo.png";
-import strokeAiAvatar from "@/assets/stroke-ai-avatar.png";
+import { useAuth } from "@/hooks/useAuth";
+import { useNavigate } from "react-router-dom";
+import siiviLogo from "@/assets/siivi-logo.png";
+import siiviAvatar from "@/assets/siivi-avatar.png";
 
 const Index = () => {
+  const { user, loading } = useAuth();
+  const navigate = useNavigate();
+  
+  // Redirect to auth if not logged in
+  useEffect(() => {
+    if (!loading && !user) {
+      navigate('/auth');
+    }
+  }, [user, loading, navigate]);
+  
+  // Show loading while checking auth
+  if (loading) {
+    return (
+      <div className="min-h-screen gradient-background flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 rounded-full gradient-primary flex items-center justify-center mx-auto mb-4 shadow-glow animate-pulse">
+            <img 
+              src={siiviLogo} 
+              alt="Siivi" 
+              className="w-10 h-10 object-contain"
+            />
+          </div>
+          <p className="text-muted-foreground">Loading Siivi...</p>
+        </div>
+      </div>
+    );
+  }
+  
+  // Don't render if not authenticated
+  if (!user) {
+    return null;
+  }
   const [messages, setMessages] = useState<ChatMessageType[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -103,7 +137,7 @@ const Index = () => {
       // Show both toast and persistent error
       setApiError(errorMessage);
       toast({
-        title: "Stroke AI API Error",
+        title: "Siivi API Error",
         description: "API request failed. Trying backup servers...",
         variant: "destructive",
       });
@@ -181,9 +215,9 @@ const Index = () => {
                     >
                       <Menu size={18} />
                     </Button>
-                    <span className="text-sm font-medium text-muted-foreground">
-                      Enhanced AI Features
-                    </span>
+                <span className="text-sm font-medium text-muted-foreground">
+                  Siivi Features
+                </span>
                   </div>
                   
                   <div className="flex items-center gap-2">
@@ -218,17 +252,17 @@ const Index = () => {
                         <div>
                           <div className="w-16 h-16 rounded-full gradient-primary flex items-center justify-center mx-auto mb-6 shadow-glow">
                             <img 
-                              src={strokeAiLogo} 
-                              alt="Stroke AI" 
+                              src={siiviLogo} 
+                              alt="Siivi" 
                               className="w-10 h-10 object-contain"
                             />
                           </div>
                           <h2 className="text-3xl font-bold text-foreground mb-3 bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-                            Welcome to Stroke AI
+                            Welcome to Siivi
                           </h2>
-                          <p className="text-lg text-muted-foreground mb-2">Your Advanced AI Assistant</p>
+                          <p className="text-lg text-muted-foreground mb-2">Your Intelligent AI Companion</p>
                           <p className="text-sm text-muted-foreground max-w-md mx-auto leading-relaxed">
-                            Ask questions, generate images, use voice commands, and explore endless possibilities with our powerful AI!
+                            Ask questions, generate images, use voice commands, and explore endless possibilities with your personalized AI assistant!
                           </p>
                         </div>
                         

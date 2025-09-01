@@ -237,6 +237,42 @@ export type Database = {
         }
         Relationships: []
       }
+      user_settings: {
+        Row: {
+          ai_model: string | null
+          ai_personality: string | null
+          ai_temperature: number | null
+          created_at: string
+          id: string
+          language: string | null
+          theme: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          ai_model?: string | null
+          ai_personality?: string | null
+          ai_temperature?: number | null
+          created_at?: string
+          id?: string
+          language?: string | null
+          theme?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          ai_model?: string | null
+          ai_personality?: string | null
+          ai_temperature?: number | null
+          created_at?: string
+          id?: string
+          language?: string | null
+          theme?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

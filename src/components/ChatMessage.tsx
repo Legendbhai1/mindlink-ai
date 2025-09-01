@@ -1,7 +1,7 @@
 import { User, Bot, ThumbsUp, ThumbsDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import strokeAiAvatar from "@/assets/stroke-ai-avatar.png";
+import siiviAvatar from "@/assets/siivi-avatar.png";
 
 interface ChatMessageProps {
   message: {
@@ -31,8 +31,8 @@ export const ChatMessage = ({ message, onFeedback }: ChatMessageProps) => {
           <User size={16} />
         ) : (
           <img 
-            src={strokeAiAvatar} 
-            alt="Stroke AI" 
+            src={siiviAvatar} 
+            alt="Siivi" 
             className="w-8 h-8 rounded-full object-cover"
           />
         )}
@@ -42,7 +42,7 @@ export const ChatMessage = ({ message, onFeedback }: ChatMessageProps) => {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <span className="text-sm font-medium text-foreground">
-              {isUser ? 'You' : 'Stroke AI'}
+              {isUser ? 'You' : 'Siivi'}
             </span>
             <span className="text-xs text-muted-foreground">
               {message.timestamp.toLocaleTimeString()}

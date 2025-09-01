@@ -1,6 +1,8 @@
-import { Code, MessageSquare } from "lucide-react";
+import { User, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import strokeAiLogo from "@/assets/stroke-ai-logo.png";
+import siiviLogo from "@/assets/siivi-logo.png";
+import { useAuth } from "@/hooks/useAuth";
+import { useNavigate } from "react-router-dom";
 
 interface HeaderProps {
   onTogglePreview: () => void;
@@ -8,27 +10,44 @@ interface HeaderProps {
 }
 
 export const Header = ({ onTogglePreview, showPreview }: HeaderProps) => {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+
   return (
     <header className="border-b border-border bg-background/80 backdrop-blur-sm px-4 py-3">
       <div className="flex items-center justify-between max-w-6xl mx-auto">
         <div className="flex items-center gap-3">
           <img 
-            src={strokeAiLogo} 
-            alt="Stroke AI"
+            src={siiviLogo} 
+            alt="Siivi"
             className="w-8 h-8 object-contain"
           />
-          <h1 className="text-xl font-bold text-foreground">Stroke AI</h1>
+          <h1 className="text-xl font-bold text-gradient-primary">Siivi</h1>
         </div>
         
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={onTogglePreview}
-          className="flex items-center gap-2"
-        >
-          {showPreview ? <MessageSquare size={16} /> : <Code size={16} />}
-          {showPreview ? 'Chat' : 'Preview'}
-        </Button>
+        <div className="flex items-center gap-2">
+          {user && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => navigate('/settings')}
+              className="flex items-center gap-2"
+            >
+              <Settings size={16} />
+              Settings
+            </Button>
+          )}
+          
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={onTogglePreview}
+            className="flex items-center gap-2"
+          >
+            {showPreview ? <User size={16} /> : <Settings size={16} />}
+            {showPreview ? 'Chat' : 'Preview'}
+          </Button>
+        </div>
       </div>
     </header>
   );

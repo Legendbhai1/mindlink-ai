@@ -36,7 +36,7 @@ export const ChatInput = ({ onSendMessage, disabled, isLoading }: ChatInputProps
             value={message}
             onChange={(e) => setMessage(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder="Message DetroitAI..."
+            placeholder="Message Siivi..."
             disabled={disabled || isLoading}
             className={cn(
               "min-h-[44px] max-h-32 resize-none pr-12 transition-smooth",
