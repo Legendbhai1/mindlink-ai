@@ -1,7 +1,7 @@
 import { User, Bot, ThumbsUp, ThumbsDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import siiviAvatar from "@/assets/siivi-avatar.png";
+import siiviAvatar from "@/assets/siivi-avatar-new.png";
 
 interface ChatMessageProps {
   message: {

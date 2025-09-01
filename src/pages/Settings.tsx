@@ -9,8 +9,9 @@ import { Separator } from '@/components/ui/separator';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
+import { useSettings } from '@/hooks/useSettings';
 import { ArrowLeft, Settings as SettingsIcon, User, Palette, Brain, Globe, LogOut } from 'lucide-react';
-import siiviLogo from '@/assets/siivi-logo.png';
+import siiviLogo from '@/assets/siivi-logo-new.png';
 
 interface UserSettings {
   ai_model: string;
@@ -24,14 +25,7 @@ const Settings = () => {
   const { user, signOut } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
-  
-  const [settings, setSettings] = useState<UserSettings>({
-    ai_model: 'openrouter/auto',
-    ai_temperature: 0.7,
-    ai_personality: 'helpful',
-    theme: 'dark',
-    language: 'en'
-  });
+  const { settings, updateSettings, isLoading: settingsLoading } = useSettings();
   
   const [profile, setProfile] = useState({
     display_name: '',
@@ -50,17 +44,6 @@ const Settings = () => {
     if (!user) return;
     
     try {
-      // Load user settings
-      const { data: settingsData } = await supabase
-        .from('user_settings')
-        .select('*')
-        .eq('user_id', user.id)
-        .single();
-      
-      if (settingsData) {
-        setSettings(settingsData);
-      }
-      
       // Load user profile
       const { data: profileData } = await supabase
         .from('profiles')
@@ -81,16 +64,6 @@ const Settings = () => {
     
     setIsLoading(true);
     try {
-      // Update settings
-      const { error: settingsError } = await supabase
-        .from('user_settings')
-        .upsert({
-          user_id: user.id,
-          ...settings
-        });
-      
-      if (settingsError) throw settingsError;
-      
       // Update profile
       const { error: profileError } = await supabase
         .from('profiles')
@@ -220,7 +193,7 @@ const Settings = () => {
                 <Label htmlFor="ai_model">AI Model</Label>
                 <Select 
                   value={settings.ai_model} 
-                  onValueChange={(value) => setSettings(prev => ({ ...prev, ai_model: value }))}
+                  onValueChange={(value) => updateSettings({ ai_model: value })}
                 >
                   <SelectTrigger>
                     <SelectValue />
@@ -238,7 +211,7 @@ const Settings = () => {
                 <Label htmlFor="ai_personality">Personality</Label>
                 <Select 
                   value={settings.ai_personality} 
-                  onValueChange={(value) => setSettings(prev => ({ ...prev, ai_personality: value }))}
+                  onValueChange={(value) => updateSettings({ ai_personality: value })}
                 >
                   <SelectTrigger>
                     <SelectValue />
@@ -262,7 +235,7 @@ const Settings = () => {
                 max="1"
                 step="0.1"
                 value={settings.ai_temperature}
-                onChange={(e) => setSettings(prev => ({ ...prev, ai_temperature: parseFloat(e.target.value) }))}
+                onChange={(e) => updateSettings({ ai_temperature: parseFloat(e.target.value) })}
                 className="w-full h-2 bg-muted rounded-lg appearance-none cursor-pointer"
               />
               <div className="flex justify-between text-xs text-muted-foreground">
@@ -291,7 +264,7 @@ const Settings = () => {
                 <Label htmlFor="theme">Theme</Label>
                 <Select 
                   value={settings.theme} 
-                  onValueChange={(value) => setSettings(prev => ({ ...prev, theme: value }))}
+                  onValueChange={(value) => updateSettings({ theme: value })}
                 >
                   <SelectTrigger>
                     <SelectValue />
@@ -308,7 +281,7 @@ const Settings = () => {
                 <Label htmlFor="language">Language</Label>
                 <Select 
                   value={settings.language} 
-                  onValueChange={(value) => setSettings(prev => ({ ...prev, language: value }))}
+                  onValueChange={(value) => updateSettings({ language: value })}
                 >
                   <SelectTrigger>
                     <SelectValue />
@@ -330,10 +303,10 @@ const Settings = () => {
         <div className="flex justify-end">
           <Button
             onClick={handleSaveSettings}
-            disabled={isLoading}
+            disabled={isLoading || settingsLoading}
             className="gradient-primary hover:shadow-glow transition-smooth px-8"
           >
-            {isLoading ? 'Saving...' : 'Save Settings'}
+            {isLoading || settingsLoading ? 'Saving...' : 'Save Settings'}
           </Button>
         </div>
       </div>

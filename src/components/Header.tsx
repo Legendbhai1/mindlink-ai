@@ -1,6 +1,6 @@
 import { User, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import siiviLogo from "@/assets/siivi-logo.png";
+import siiviLogo from "@/assets/siivi-logo-new.png";
 import { useAuth } from "@/hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 

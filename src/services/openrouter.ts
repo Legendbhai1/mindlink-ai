@@ -34,16 +34,26 @@ export class OpenRouterService {
     return OpenRouterService.instance;
   }
   
-  async sendMessage(messages: ChatMessage[]): Promise<string> {
-    return this.sendMessageWithRetry(messages, 0);
+  async sendMessage(messages: ChatMessage[], options?: {
+    model?: string;
+    temperature?: number;
+    personality?: string;
+  }): Promise<string> {
+    return this.sendMessageWithRetry(messages, 0, options);
   }
 
-  private async sendMessageWithRetry(messages: ChatMessage[], retryCount: number): Promise<string> {
+  private async sendMessageWithRetry(messages: ChatMessage[], retryCount: number, options?: {
+    model?: string;
+    temperature?: number;
+    personality?: string;
+  }): Promise<string> {
     try {
+      const systemContent = options?.personality || "You are Siivi, a powerful AI assistant. Provide clear, informative, and engaging responses with sources when possible. Use markdown formatting when appropriate.";
+      
       const openRouterMessages: OpenRouterMessage[] = [
         {
           role: "system",
-          content: "You are Stroke AI, a powerful AI assistant. Provide clear, informative, and engaging responses with sources when possible. Use markdown formatting when appropriate."
+          content: systemContent
         },
         ...messages.map(msg => ({
           role: msg.role,
@@ -59,12 +69,12 @@ export class OpenRouterService {
           'Authorization': `Bearer ${currentKey}`,
           'Content-Type': 'application/json',
           'HTTP-Referer': window.location.origin,
-          'X-Title': 'Stroke AI Assistant'
+          'X-Title': 'Siivi Assistant'
         },
         body: JSON.stringify({
-          model: 'openrouter/auto',
+          model: options?.model || 'openrouter/auto',
           messages: openRouterMessages,
-          temperature: 0.7,
+          temperature: options?.temperature || 0.7,
           max_tokens: 2000,
           top_p: 1,
           frequency_penalty: 0,
@@ -77,9 +87,9 @@ export class OpenRouterService {
         // Try next OpenRouter API key; otherwise fall back to Google Gemini
         if (retryCount < API_KEYS.length - 1) {
           currentApiKeyIndex = (currentApiKeyIndex + 1) % API_KEYS.length;
-          return this.sendMessageWithRetry(messages, retryCount + 1);
+          return this.sendMessageWithRetry(messages, retryCount + 1, options);
         } else {
-          return this.sendViaGoogle(messages, 0);
+          return this.sendViaGoogle(messages, 0, options);
         }
       }
       
@@ -95,16 +105,20 @@ export class OpenRouterService {
       // Try next OpenRouter API key; otherwise fall back to Google Gemini
       if (retryCount < API_KEYS.length - 1) {
         currentApiKeyIndex = (currentApiKeyIndex + 1) % API_KEYS.length;
-        return this.sendMessageWithRetry(messages, retryCount + 1);
+        return this.sendMessageWithRetry(messages, retryCount + 1, options);
       }
       // Fall back to Google Gemini
-      return this.sendViaGoogle(messages, 0);
+      return this.sendViaGoogle(messages, 0, options);
     }
   }
 
-  private async sendViaGoogle(messages: ChatMessage[], retryCount: number): Promise<string> {
+  private async sendViaGoogle(messages: ChatMessage[], retryCount: number, options?: {
+    model?: string;
+    temperature?: number;
+    personality?: string;
+  }): Promise<string> {
     try {
-      const systemPrompt = "You are Stroke AI, a powerful AI assistant. Provide clear, informative, and engaging responses with sources when possible. Use markdown formatting when appropriate.";
+      const systemPrompt = options?.personality || "You are Siivi, a powerful AI assistant. Provide clear, informative, and engaging responses with sources when possible. Use markdown formatting when appropriate.";
       const contents = [
         { role: "user", parts: [{ text: systemPrompt }] },
         ...messages.map(m => ({
@@ -122,7 +136,7 @@ export class OpenRouterService {
         body: JSON.stringify({
           contents,
           generationConfig: {
-            temperature: 0.7,
+            temperature: options?.temperature || 0.7,
             maxOutputTokens: 2048
           }
         })
@@ -131,7 +145,7 @@ export class OpenRouterService {
       if (!response.ok) {
         if (retryCount < GOOGLE_API_KEYS.length - 1) {
           currentGoogleKeyIndex = (currentGoogleKeyIndex + 1) % GOOGLE_API_KEYS.length;
-          return this.sendViaGoogle(messages, retryCount + 1);
+          return this.sendViaGoogle(messages, retryCount + 1, options);
         }
         const errorData = await response.json().catch(() => ({}));
         throw new Error(`Google Gemini failed: ${response.status} ${response.statusText}. ${errorData.error?.message || ''}`);
@@ -147,10 +161,10 @@ export class OpenRouterService {
       console.error('Google Gemini API Error:', err);
       if (retryCount < GOOGLE_API_KEYS.length - 1) {
         currentGoogleKeyIndex = (currentGoogleKeyIndex + 1) % GOOGLE_API_KEYS.length;
-        return this.sendViaGoogle(messages, retryCount + 1);
+        return this.sendViaGoogle(messages, retryCount + 1, options);
       }
       if (err instanceof Error) throw err;
-      throw new Error('Failed to get response from Stroke AI assistant via Google Gemini');
+      throw new Error('Failed to get response from Siivi assistant via Google Gemini');
     }
   }
 }

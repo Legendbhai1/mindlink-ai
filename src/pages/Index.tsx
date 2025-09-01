@@ -7,8 +7,8 @@ import { Sidebar } from "@/components/Sidebar";
 import { ActionButtons } from "@/components/ActionButtons";
 import { Header } from "@/components/Header";
 import { CodePreview } from "@/components/CodePreview";
-import { ImageGenerator } from "@/components/ImageGenerator";
-import { VoiceRecognition } from "@/components/VoiceRecognition";
+
+import { ChatInterface } from "@/components/ChatInterface";
 import { FeedbackModal } from "@/components/FeedbackModal";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -17,12 +17,14 @@ import { useChatHistory } from "@/hooks/useChatHistory";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { useNavigate } from "react-router-dom";
-import siiviLogo from "@/assets/siivi-logo.png";
-import siiviAvatar from "@/assets/siivi-avatar.png";
+import { useSettings } from "@/hooks/useSettings";
+import siiviLogo from "@/assets/siivi-logo-new.png";
+import siiviAvatar from "@/assets/siivi-avatar-new.png";
 
 const Index = () => {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
+  const { settings, translate, getPersonalityPrompt } = useSettings();
   
   // Redirect to auth if not logged in
   useEffect(() => {
@@ -57,7 +59,7 @@ const Index = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
-  const [showImageGenerator, setShowImageGenerator] = useState(false);
+  
   const [showFeedback, setShowFeedback] = useState(false);
   const [feedbackMessage, setFeedbackMessage] = useState<string>("");
   const [apiError, setApiError] = useState<string | null>(null);
@@ -116,7 +118,11 @@ const Index = () => {
     setIsLoading(true);
     
     try {
-      const response = await openRouterService.sendMessage(newMessages);
+      const response = await openRouterService.sendMessage(newMessages, {
+        model: settings.ai_model,
+        temperature: settings.ai_temperature,
+        personality: getPersonalityPrompt()
+      });
       
       const assistantMessage: ChatMessageType = {
         id: (Date.now() + 1).toString(),
@@ -194,135 +200,19 @@ const Index = () => {
           onDeleteChat={deleteChat}
         />
 
-        {/* Main Content */}
         <div className="flex-1 flex flex-col min-w-0">
-          {/* Show different views based on state */}
-          {showPreview ? (
-            <CodePreview />
-          ) : showImageGenerator ? (
-            <ImageGenerator onClose={() => setShowImageGenerator(false)} />
-          ) : (
-            <>
-              {/* Feature Toolbar */}
-              <div className="border-b border-border bg-background/50 backdrop-blur-sm p-3">
-                <div className="flex items-center justify-between max-w-4xl mx-auto">
-                  <div className="flex items-center gap-2">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => setSidebarOpen(!sidebarOpen)}
-                      className="lg:hidden"
-                    >
-                      <Menu size={18} />
-                    </Button>
-                <span className="text-sm font-medium text-muted-foreground">
-                  Siivi Features
-                </span>
-                  </div>
-                  
-                  <div className="flex items-center gap-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setShowImageGenerator(true)}
-                      className="flex items-center gap-2 hover:shadow-glow transition-bounce"
-                    >
-                      <Wand2 size={16} />
-                      Generate Images
-                    </Button>
-                  </div>
-                </div>
-              </div>
-
-              {/* API Error Alert */}
-              {apiError && (
-                <Alert variant="destructive" className="m-4 mb-0">
-                  <AlertDescription>
-                    {apiError}
-                  </AlertDescription>
-                </Alert>
-              )}
-              
-              {/* Chat Messages */}
-              <main className="flex-1 overflow-hidden flex flex-col">
-                <div className="flex-1 overflow-y-auto">
-                  {messages.length === 0 ? (
-                    <div className="flex-1 flex items-center justify-center p-8">
-                      <div className="text-center max-w-2xl mx-auto space-y-8">
-                        <div>
-                          <div className="w-16 h-16 rounded-full gradient-primary flex items-center justify-center mx-auto mb-6 shadow-glow">
-                            <img 
-                              src={siiviLogo} 
-                              alt="Siivi" 
-                              className="w-10 h-10 object-contain"
-                            />
-                          </div>
-                          <h2 className="text-3xl font-bold text-foreground mb-3 bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-                            Welcome to Siivi
-                          </h2>
-                          <p className="text-lg text-muted-foreground mb-2">Your Intelligent AI Companion</p>
-                          <p className="text-sm text-muted-foreground max-w-md mx-auto leading-relaxed">
-                            Ask questions, generate images, use voice commands, and explore endless possibilities with your personalized AI assistant!
-                          </p>
-                        </div>
-                        
-                        {/* Voice Recognition Card */}
-                        <VoiceRecognition 
-                          onTranscript={handleVoiceTranscript}
-                          className="max-w-md mx-auto"
-                        />
-                        
-                        <ActionButtons onAction={handleActionClick} />
-                      </div>
-                    </div>
-                   ) : (
-                     <div className="flex-1 overflow-y-auto px-4">
-                       <div className="max-w-4xl mx-auto py-4">
-                         {messages.map((message) => (
-                           <ChatMessage 
-                             key={message.id} 
-                             message={message} 
-                             onFeedback={handleFeedback}
-                           />
-                         ))}
-                         {isLoading && <TypingIndicator />}
-                         <div ref={messagesEndRef} />
-                       </div>
-                     </div>
-                   )}
-                 </div>
-                 
-                 {/* Chat Input */}
-                 <div className="border-t border-border bg-background p-4">
-                   <div className="max-w-4xl mx-auto space-y-3">
-                     <div className="flex justify-center mb-2">
-                       <Button
-                         onClick={handleNewChat}
-                         variant="outline"
-                         size="sm"
-                         className="rounded-full px-6 py-2 text-sm font-medium border-primary/20 hover:border-primary hover:bg-primary/10"
-                       >
-                         <MessageSquare size={16} className="mr-2" />
-                         New chat
-                       </Button>
-                     </div>
-                     
-                     {messages.length > 0 && (
-                       <VoiceRecognition 
-                         onTranscript={handleVoiceTranscript}
-                         className="mb-3"
-                       />
-                     )}
-                     <ChatInput 
-                       onSendMessage={handleSendMessage}
-                       disabled={isLoading}
-                       isLoading={isLoading}
-                     />
-                   </div>
-                 </div>
-              </main>
-            </>
-          )}
+          <ChatInterface
+            messages={messages}
+            isLoading={isLoading}
+            onSendMessage={handleSendMessage}
+            onVoiceTranscript={handleVoiceTranscript}
+            onFeedback={handleFeedback}
+            onNewChat={handleNewChat}
+            onActionClick={handleActionClick}
+            apiError={apiError}
+            sidebarOpen={sidebarOpen}
+            onToggleSidebar={() => setSidebarOpen(!sidebarOpen)}
+          />
         </div>
       </div>
       
